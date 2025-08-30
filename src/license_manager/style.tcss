@@ -1,0 +1,65 @@
+Static {
+    width: auto;
+    height: 1;
+    padding: 0 0;
+}
+
+ModalScreen {
+    align: center middle;
+}
+
+ModalScreen > Grid {
+    grid-size: 2;
+    grid-gutter: 1 2;
+    grid-rows: 1fr 3;
+    padding: 0 1;
+    width: 60;
+    border: thick $background 80%;
+    background: $surface;
+}
+
+ModalScreen Input.option_input {
+    width: 30;
+    # border: round;
+}
+
+ModalScreen DatePicker Label {
+    border: round;
+}
+
+# ModalScreen DatePicker > Input {
+#     width: 10;
+# }
+
+.option_label {
+    height: 3;
+    content-align: center middle;
+    width: auto;
+}
+
+#signing_key_file_input {
+    width: 40;
+}
+
+#license_folder_input {
+    width: 40;
+}
+
+#signing_authority_container {
+    height: auto;
+}
+
+#signing_authority_container Static {
+    # background: $surface;
+}
+
+#signing_authority_container Horizontal {
+    # background: green;
+    # border: solid;
+    height: auto;
+}
+
+Input.crypto_key {
+    min-width: 50;
+    max-width: 70;
+}

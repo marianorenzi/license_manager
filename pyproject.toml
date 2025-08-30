@@ -1,0 +1,72 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "license-manager"
+dynamic = ["version"]
+description = ''
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Mariano Renzi", email = "mariano@renzi.com.ar" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "textual",
+  "textual-timepiece",
+  "pynacl",
+  "pyperclip"
+]
+
+[project.urls]
+Documentation = "https://github.com/marianorenzi/righthand_license_manager#readme"
+Issues = "https://github.com/marianorenzi/righthand_license_manager/issues"
+Source = "https://github.com/marianorenzi/righthand_license_manager"
+
+[project.scripts]
+shoal = "license_manager.license_manager:__main__"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.version]
+path = "src/license_manager/__about__.py"
+
+[tool.hatch.envs.types]
+extra-dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/license_manager tests}"
+
+[tool.coverage.run]
+source_pkgs = ["license_manager", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/license_manager/__about__.py",
+]
+
+[tool.coverage.paths]
+license_manager = ["src/license_manager", "*/license-manager/src/license_manager"]
+tests = ["tests", "*/license-manager/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
