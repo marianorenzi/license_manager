@@ -1,7 +1,11 @@
+from textual import on, work
 from textual.app import ComposeResult
 from textual.widgets import TabPane, Button, Static, Label, Input
 from textual.containers import Horizontal, Container
+from textual_fspicker import FileOpen, FileSave
 from nacl import signing, encoding
+from pathlib import Path
+import os
 import base64
 import pyperclip
 
@@ -36,39 +40,72 @@ class SigningAuthorityPane(TabPane):
     def compose(self) -> ComposeResult:
         with Container(id="signing_authority_container"):
             with Horizontal():
-                yield Input("/home/manoplin/licenses/signkey", id="signing_key_file_input", placeholder="Path to signing key file")
-                yield Button("Load Keys", id="load")
-                yield Button("Create Keys", id="create")
+                yield Button("Generate Keys", id="generate")
+                yield Button("Open Keys", id="open")
+                yield Button("Save Keys", id="save")
             with Horizontal():
-                yield Static("Signing Key: ", classes="option_label")
+                yield Static("Current Key:", classes="option_label")
+                yield Input("", disabled=True, id="current_key", classes="crypto_key")
+            with Horizontal():
+                yield Static("Signing Key:", classes="option_label")
                 yield Input("", disabled=True, id="signing_key", classes="crypto_key")
-                # yield Label("", id="signing_key", classes="crypto_key option_label")
             with Horizontal():
-                yield Static("Verification Key: ", classes="option_label")
+                yield Static("Verification Key:", classes="option_label")
                 yield Input("", disabled=True, id="verification_key", classes="crypto_key")
                 yield Button("Copy", id="copy_verification_key")
-                # yield Label("", id="verification_key", classes="crypto_key option_label")
         yield Container()
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
+    def on_mount(self) -> None:
+        last_key = self.app.ctx["last_key"]
+        if (last_key): self._load_key(last_key)
+        pass
+
+    async def on_button_pressed(self, event: Button.Pressed) -> None:
         event.stop()
-        if event.button.id == "load":
-            self.signing_authority = SigningAuthority(signing_key_file=self.query_one("#signing_key_file_input", Input).value)
-            self.query_one("#signing_key", Input).value = self.signing_authority.get_signing_key()
-            self.query_one("#verification_key", Input).value = self.signing_authority.get_verification_key()
-            # self.query_one("#signing_key", Label).update(self.signing_authority.get_signing_key())
-            # self.query_one("#verification_key", Label).update(self.signing_authority.get_verification_key())
-        elif event.button.id == "create":
+        if event.button.id == "generate":
             self.signing_authority = SigningAuthority()
             self.query_one("#signing_key", Input).value = self.signing_authority.get_signing_key()
             self.query_one("#verification_key", Input).value = self.signing_authority.get_verification_key()
-            # self.query_one("#signing_key", Label).update(self.signing_authority.get_signing_key())
-            # self.query_one("#verification_key", Label).update(self.signing_authority.get_verification_key())
-            with open(self.query_one("#signing_key_file_input", Input).value, "w") as f:
-                f.write(self.signing_authority.get_signing_key())
+            self.query_one("#current_key", Input).value = ""
         elif event.button.id == "copy_verification_key":
             if self.signing_authority:
                 pyperclip.copy(self.signing_authority.get_verification_key())
                 self.app.notify("Verification key copied to clipboard", severity="information")
             else:
                 self.app.notify("No signing authority loaded", severity="warning")
+
+    @on(Button.Pressed, "#open")
+    @work
+    async def open_key(self) -> None:
+        if open_key := await self.app.push_screen_wait(FileOpen(title="Open Signing Key File", location=self._key_folder())):
+            self._load_key(str(open_key))
+            self.app.ctx["last_key"] = str(open_key)
+
+    @on(Button.Pressed, "#save")
+    @work
+    async def save_key(self) -> None:
+        if self.signing_authority is None:
+            self.app.notify("No signing authority to save", severity="warning")
+            return
+        if save_key := await self.app.push_screen_wait(FileSave(title="Save Signing Key File", location=self._key_folder())):
+            self._save_key(str(save_key))
+
+    def _load_key(self, key_file: str) -> None:
+        self.signing_authority = SigningAuthority(signing_key_file=key_file)
+        self.query_one("#signing_key", Input).value = self.signing_authority.get_signing_key()
+        self.query_one("#verification_key", Input).value = self.signing_authority.get_verification_key()
+        self.query_one("#current_key", Input).value = key_file
+
+    def _save_key(self, key_file: str) -> None:
+        if self.signing_authority is None: return
+
+        with open(key_file, "w") as f:
+            f.write(self.signing_authority.get_signing_key())
+
+        self.app.ctx["last_key"] = key_file
+        self.query_one("#current_key", Input).value = key_file
+
+    def _key_folder(self) -> Path:
+        if self.app.ctx["last_key"] is not None: key_folder = os.path.dirname(os.path.realpath(self.app.ctx["last_key"]))
+        else: key_folder = "."
+        return Path(key_folder)

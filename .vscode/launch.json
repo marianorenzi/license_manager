@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug rhlm (module)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "license_manager",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Debug rhlm (CLI)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/.venv/bin/rhlm",
+            "console": "integratedTerminal"
+        }
+    ]
+}

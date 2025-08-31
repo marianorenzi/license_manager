@@ -1,35 +1,99 @@
-Static {
-    width: auto;
-    height: 1;
-    padding: 0 0;
-}
-
 ModalScreen {
     align: center middle;
+    
+    & > Grid {
+        grid-size: 2;
+        grid-gutter: 1 2;
+        grid-rows: 1fr 3;
+        padding: 0 1;
+        width: 60;
+        border: thick $background 80%;
+        background: $surface;
+
+        & > VerticalGroup#body {
+            column-span: 2;
+        }
+    }
 }
 
-ModalScreen > Grid {
-    grid-size: 2;
-    grid-gutter: 1 2;
-    grid-rows: 1fr 3;
-    padding: 0 1;
-    width: 60;
-    border: thick $background 80%;
-    background: $surface;
+LicenseDataFormModal {
+
+    & > Grid {
+        height: 27;
+        align: center middle;
+    }
+
+    & HorizontalGroup#buttons {
+        align: center middle;
+
+        & > Button {
+            margin: 2;
+        }
+    }
+
+    & .option_label {
+        width: 20;
+    }
+
+    & .option_input {
+        width: 30;
+    }
+
+    & #error_container {
+        margin-top: 2;
+        margin-left: 5;
+        # align: center middle;
+    }
 }
 
-ModalScreen Input.option_input {
-    width: 30;
-    # border: round;
+LicenseTablePane {
+    & Horizontal {
+        height: auto;
+    }
+
+    & Button {
+        margin-right: 1;
+    }
+
+    & Input {
+        width: 30;
+    }
+
+    & .search_container {
+        align: right middle;
+    }
 }
 
-ModalScreen DatePicker Label {
-    border: round;
-}
+SigningAuthorityPane {
+    align: center middle;
+    # background: red;
+    
+    & .option_label {
+        width: 20;
+    }
 
-# ModalScreen DatePicker > Input {
-#     width: 10;
-# }
+    & Input {
+        width: 40;
+    }
+
+    & #signing_authority_container {
+        height: auto;
+        width: 100;
+        align: center middle;
+        # background: green;
+    }
+
+    & #signing_authority_container Horizontal {
+        # background: green;
+        # border: solid;
+        height: auto;
+    }
+
+    & .crypto_key {
+        min-width: 50;
+        max-width: 70;
+    }
+}
 
 .option_label {
     height: 3;
@@ -37,29 +101,3 @@ ModalScreen DatePicker Label {
     width: auto;
 }
 
-#signing_key_file_input {
-    width: 40;
-}
-
-#license_folder_input {
-    width: 40;
-}
-
-#signing_authority_container {
-    height: auto;
-}
-
-#signing_authority_container Static {
-    # background: $surface;
-}
-
-#signing_authority_container Horizontal {
-    # background: green;
-    # border: solid;
-    height: auto;
-}
-
-Input.crypto_key {
-    min-width: 50;
-    max-width: 70;
-}
