@@ -61,7 +61,7 @@ class LicenseDataFormModal(ModalScreen[dict]):
                     yield Input(type="text", id="features", classes="option_input")
                 with HorizontalGroup():
                     yield Static("Hardware ID", classes="option_label")
-                    yield Input(type="text", id="hwid", classes="option_input", valid_empty=False, validate_on=["submitted","changed","blur"], validators=Function(is_not_empty, "Can't be empty"))
+                    yield Input(type="text", id="hwid", classes="option_input", valid_empty=False, validate_on=["submitted","changed","blur"], validators=Function(is_not_empty, "Hardware ID cannot be empty"))
                 with VerticalGroup(id="error_container"):
                     yield Label("", id="errors", classes="error")
                 with HorizontalGroup(id="buttons"):
